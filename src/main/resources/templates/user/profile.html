@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head('个人信息 - 酒店预约管理系统')"></head>
+<body>
+    <nav th:replace="fragments/common :: navbar"></nav>
+    <div th:replace="fragments/common :: flash"></div>
+
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-transparent border-0 pt-4 px-4">
+                        <h5 class="fw-bold mb-0"><i class="bi bi-person-gear me-2 text-primary"></i>个人信息</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="text-center mb-4">
+                            <div class="avatar-circle bg-primary text-white mx-auto mb-3">
+                                <span class="fs-1 fw-bold" th:text="${#strings.substring(user.username, 0, 1)}">U</span>
+                            </div>
+                            <h5 class="fw-bold mb-1" th:text="${user.realName != null ? user.realName : user.username}">用户名</h5>
+                            <span class="badge bg-success px-3 py-2">
+                                <i class="bi bi-person me-1"></i>普通用户
+                            </span>
+                        </div>
+
+                        <form th:action="@{/user/profile}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label"><i class="bi bi-person me-1"></i>用户名</label>
+                                <input type="text" class="form-control" th:value="${user.username}" disabled>
+                                <small class="text-muted">用户名不可修改</small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><i class="bi bi-card-text me-1"></i>真实姓名</label>
+                                <input type="text" name="realName" class="form-control" th:value="${user.realName != null ? user.realName : ''}" placeholder="请输入真实姓名">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label"><i class="bi bi-telephone me-1"></i>手机号码</label>
+                                <input type="tel" name="phone" class="form-control" th:value="${user.phone != null ? user.phone : ''}" placeholder="请输入手机号码">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 rounded-pill">
+                                <i class="bi bi-check-lg me-1"></i>保存修改
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="fragments/common :: footer"></footer>
+    <div th:replace="fragments/common :: scripts"></div>
+</body>
+</html>

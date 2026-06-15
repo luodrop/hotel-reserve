@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head('首页 - 酒店预约管理系统')"></head>
+<body>
+    <nav th:replace="fragments/common :: navbar"></nav>
+    <div th:replace="fragments/common :: flash"></div>
+
+    <section class="hero-section text-white text-center d-flex align-items-center">
+        <div class="hero-overlay"></div>
+        <div class="container position-relative">
+            <h1 class="display-4 fw-bold mb-3">发现您的理想居所</h1>
+            <p class="lead mb-4">精选全国高品质酒店，一键预约，畅享舒适旅程</p>
+            <form th:action="@{/}" method="get" class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="keyword" class="form-control border-start-0" placeholder="搜索酒店名称、城市或地址..." th:value="${keyword}">
+                        <button class="btn btn-primary px-4" type="submit"><i class="bi bi-search me-1"></i>搜索</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold mb-0"><i class="bi bi-building me-2 text-primary"></i>推荐酒店</h3>
+                <span class="text-muted" th:if="${not #lists.isEmpty(hotels)}">共 <strong>[[${#lists.size(hotels)}]]</strong> 家</span>
+            </div>
+            <div th:if="${#lists.isEmpty(hotels)}" class="text-center py-5">
+                <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-3" th:if="${keyword != ''}">未找到与 "<strong>[[${keyword}]]</strong>" 相关的酒店</p>
+                <p class="text-muted mt-3" th:if="${keyword == ''}">暂无酒店数据</p>
+            </div>
+            <div class="row g-4" th:if="${not #lists.isEmpty(hotels)}">
+                <div class="col-lg-4 col-md-6" th:each="hotel : ${hotels}">
+                    <div class="card hotel-card h-100 border-0 shadow-sm">
+                        <div class="position-relative overflow-hidden" style="height: 220px;">
+                            <img th:src="${hotel.images}" th:alt="${hotel.name}" class="card-img-top h-100 w-100" style="object-fit: cover;">
+                            <div class="position-absolute top-0 end-0 m-2"><span class="badge bg-warning text-dark px-3 py-2"><i class="bi bi-star-fill me-1"></i>[[${hotel.rating}]]</span></div>
+                            <div class="position-absolute bottom-0 start-0 m-2"><span class="badge bg-primary">[[${hotel.city}]]</span></div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold mb-2">[[${hotel.name}]]</h5>
+                            <p class="card-text text-muted small mb-2"><i class="bi bi-geo-alt me-1"></i>[[${hotel.address}]]</p>
+                            <p class="card-text text-secondary">[[${hotel.description}]]</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 pb-3 pt-0">
+                            <a th:href="@{/hotel/{id}(id=${hotel.id})}" class="btn btn-outline-primary w-100 rounded-pill"><i class="bi bi-eye me-1"></i>查看详情</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="fragments/common :: footer"></footer>
+    <div th:replace="fragments/common :: scripts"></div>
+</body>
+</html>

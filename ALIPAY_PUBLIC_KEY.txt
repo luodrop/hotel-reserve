@@ -1,0 +1,8 @@
+﻿# ===== 支付宝沙箱 - 新的应用公钥 =====
+# 请将以下公钥上传到 https://open.alipay.com/develop/sandbox/account
+# 在沙箱控制台中找到"应用公钥"设置，点击"修改"，将下面的内容粘贴进去
+# 然后点击"保存"。
+# 保存后，系统会生成"支付宝公钥"，请复制支付宝公钥并替换 application.properties 中的 alipay.alipay-public-key 值
+# ==========================================
+
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyms6GjSjacCKBVME+dTRcrMO9AwHZp1Jv8UTrKw23gFCSY/6NlpWwvaYG1TIbKV/RPpH0ct2EFLcslkUaLH+GR1djHQOoCZ5qntyhiGnxwxC3dH/h8M85bkx11r7wBDv84hxHOOmOjCfshR36ZYK27gfPjjmmXRFw1fFY7nBSsVSpbi/tUNMpWsDqbFGI9gX2BwnCHcpz1N2GM5JhQDHqUC0KwQwVWOTIVnoXpoM4xrdqvBt2/VO/8C8/En3nwdB029NCU33EtIkC1bBB+6Klhur2c9oJxTg8V1I7TsTWalVrBwcNJH6lksvSnbdOTBHUC9P+8Wh/CJEHSrfCspKswIDAQAB

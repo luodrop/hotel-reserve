@@ -1,0 +1,160 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head('酒店详情 - 酒店预约管理系统')"></head>
+<body>
+    <nav th:replace="fragments/common :: navbar"></nav>
+    <div th:replace="fragments/common :: flash"></div>
+
+    <div class="container py-4">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none">首页</a></li>
+                <li class="breadcrumb-item active" th:text="${hotel.name}">酒店名</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="position-relative" style="height: 400px;">
+                        <img th:src="${hotel.images}" th:alt="${hotel.name}" class="w-100 h-100" style="object-fit: cover; border-radius: 0.5rem 0.5rem 0 0;">
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h2 class="fw-bold mb-1" th:text="${hotel.name}">酒店名</h2>
+                                <p class="text-muted mb-0"><i class="bi bi-geo-alt me-1"></i><span th:text="${hotel.address}">地址</span></p>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-warning text-dark fs-6 px-3 py-2"><i class="bi bi-star-fill me-1"></i><span th:text="${hotel.rating}">0</span></span>
+                            </div>
+                        </div>
+                        <p class="text-secondary" th:text="${hotel.description}">描述</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm mb-4 sticky-top" style="top: 80px;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-calendar-check me-2 text-primary"></i>立即预约</h5>
+                        <div th:if="${currentUser == null}" class="alert alert-info">
+                            <i class="bi bi-info-circle me-1"></i>请<a th:href="@{/login}" class="alert-link">登录</a>后预约
+                        </div>
+                        <div th:if="${currentUser != null}">
+                            <p class="text-muted small mb-3">选择下方房型，点击"立即预约"按钮</p>
+                            <hr>
+                            <div id="bookingSummary" class="text-center text-muted py-3">
+                                <i class="bi bi-hand-index-thumb fs-2"></i>
+                                <p class="mt-2">请选择一个房型开始预约</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="fw-bold mb-4"><i class="bi bi-door-open me-2 text-primary"></i>可选房型</h3>
+        <div class="row g-4 mb-5">
+            <div class="col-lg-4 col-md-6" th:each="room : ${rooms}">
+                <div class="card room-card h-100 border-0 shadow-sm">
+                    <div style="height: 200px;">
+                        <img th:src="${room.image}" th:alt="${room.typeName}" class="w-100 h-100" style="object-fit: cover;">
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="fw-bold mb-0" th:text="${room.typeName}">房型名</h5>
+                            <h5 class="text-primary fw-bold mb-0"><span th:text="${fmt.apply(room.price)}">¥0</span><small class="text-muted fs-6">/晚</small></h5>
+                        </div>
+                        <p class="card-text text-muted small mb-2"><i class="bi bi-people me-1"></i>可住 <strong th:text="${room.capacity}">1</strong> 人</p>
+                        <p class="text-secondary small" th:text="${room.description}">描述</p>
+                        <div th:if="${currentUser != null}">
+                            <button class="btn btn-primary w-100 rounded-pill book-btn"
+                                    th:data-room-id="${room.id}"
+                                    th:data-room-name="${room.typeName}"
+                                    th:data-room-price="${room.price}"
+                                    th:data-room-capacity="${room.capacity}"
+                                    th:data-room-image="${room.image}"
+                                    data-bs-toggle="modal" data-bs-target="#bookingModal">
+                                <i class="bi bi-calendar-plus me-1"></i>立即预约
+                            </button>
+                        </div>
+                        <div th:if="${currentUser == null}">
+                            <a th:href="@{/login}" class="btn btn-outline-secondary w-100 rounded-pill"><i class="bi bi-box-arrow-in-right me-1"></i>登录后预约</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal fade" id="bookingModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-calendar-plus me-2"></i>提交预约</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form th:action="@{/user/reserve}" method="post">
+                    <div class="modal-body p-4">
+                        <input type="hidden" name="roomId" id="modalRoomId">
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="selected-room-card text-center p-3 bg-light rounded">
+                                    <img id="modalRoomImage" src="" class="rounded mb-2" style="width: 100%; height: 120px; object-fit: cover;">
+                                    <h6 id="modalRoomName" class="mb-1 fw-bold"></h6>
+                                    <p class="mb-0 text-primary fw-bold"><span id="modalRoomPrice"></span> <small class="text-muted">/晚</small></p>
+                                    <small class="text-muted" id="modalRoomCapacity"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="row g-3">
+                                    <div class="col-sm-6">
+                                        <label class="form-label"><i class="bi bi-calendar me-1"></i>入住日期 <span class="text-danger">*</span></label>
+                                        <input type="date" name="checkIn" class="form-control" id="checkIn" required>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="form-label"><i class="bi bi-calendar me-1"></i>退房日期 <span class="text-danger">*</span></label>
+                                        <input type="date" name="checkOut" class="form-control" id="checkOut" required>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="form-label"><i class="bi bi-people me-1"></i>入住人数</label>
+                                        <input type="number" name="guests" class="form-control" value="1" min="1" max="10">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="form-label"><i class="bi bi-telephone me-1"></i>联系电话 <span class="text-danger">*</span></label>
+                                    <input type="tel" name="phone" class="form-control" placeholder="手机号码" th:value="${currentUser != null ? currentUser.phone : ''}" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><i class="bi bi-chat-text me-1"></i>备注信息</label>
+                            <textarea name="note" class="form-control" rows="2" placeholder="特殊需求、到店时间等（选填）"></textarea>
+                        </div>
+                        <div class="price-summary bg-light p-3 rounded">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span id="summaryRoomName"></span>
+                                <span><span id="summaryPricePerNight"></span> × <span id="summaryNights">1</span> 晚</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold fs-5">
+                                <span>合计</span>
+                                <span class="text-primary"><span id="summaryTotal">0</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x me-1"></i>取消</button>
+                        <button type="submit" class="btn btn-primary px-4"><i class="bi bi-check-circle me-1"></i>确认预约</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="fragments/common :: footer"></footer>
+    <div th:replace="fragments/common :: scripts"></div>
+</body>
+</html>

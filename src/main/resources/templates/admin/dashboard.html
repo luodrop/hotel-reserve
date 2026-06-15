@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head('管理后台 - 酒店预约管理系统')"></head>
+<body>
+    <nav th:replace="fragments/common :: navbar"></nav>
+    <div th:replace="fragments/common :: flash"></div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 p-0"><div th:replace="admin/sidebar :: sidebar"></div></div>
+            <div class="col-md-10 p-4">
+                <h4 class="fw-bold mb-4"><i class="bi bi-speedometer2 me-2 text-primary"></i>仪表盘</h4>
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm bg-primary text-white">
+                            <div class="card-body text-center p-4"><i class="bi bi-building fs-1"></i><h2 class="fw-bold mb-0" th:text="${total_hotels}">0</h2><small>酒店总数</small></div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm bg-success text-white">
+                            <div class="card-body text-center p-4"><i class="bi bi-calendar-check fs-1"></i><h2 class="fw-bold mb-0" th:text="${total_reservations}">0</h2><small>预约总数</small></div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm bg-warning text-dark">
+                            <div class="card-body text-center p-4"><i class="bi bi-clock fs-1"></i><h2 class="fw-bold mb-0" th:text="${pending_count}">0</h2><small>待确认</small></div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm bg-danger text-white">
+                            <div class="card-body text-center p-4"><i class="bi bi-credit-card fs-1"></i><h2 class="fw-bold mb-0" th:text="${unpaid_count}">0</h2><small>待付款</small></div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm bg-info text-white">
+                            <div class="card-body text-center p-4"><i class="bi bi-people fs-1"></i><h2 class="fw-bold mb-0" th:text="${total_users}">0</h2><small>用户总数</small></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-transparent border-0 pt-4 px-4"><h5 class="fw-bold mb-0"><i class="bi bi-list-ul me-2 text-primary"></i>最近预约</h5></div>
+                    <div class="card-body p-4">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr><th>ID</th><th>用户</th><th>酒店</th><th>房型</th><th>入住</th><th>退房</th><th>金额</th><th>状态</th><th>操作</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="r : ${recent_reservations}">
+                                        <td>[[${r[0]}]]</td>
+                                        <td>[[${r[12] != null ? r[12] : r[11]}]]</td>
+                                        <td>[[${r[15]}]]</td>
+                                        <td>[[${r[13]}]]</td>
+                                        <td>[[${r[1]}]]</td>
+                                        <td>[[${r[2]}]]</td>
+                                        <td class="fw-bold">[[${fmt.apply(r[8])}]]</td>
+                                        <td>
+                                            <span th:if="${r[7] == 'PENDING'}" class="badge bg-warning text-dark">待确认</span>
+                                            <span th:if="${r[7] == 'UNPAID'}" class="badge bg-danger">待付款</span>
+                                            <span th:if="${r[7] == 'CONFIRMED'}" class="badge bg-success">已确认</span>
+                                            <span th:if="${r[7] == 'CANCELLED'}" class="badge bg-secondary">已取消</span>
+                                        </td>
+                                        <td>
+                                            <form th:if="${r[7] == 'UNPAID'}" th:action="@{/admin/reservations/confirm/{id}(id=${r[0]})}" method="post" style="display:inline">
+                                                <button class="btn btn-success btn-sm rounded-pill"><i class="bi bi-check me-1"></i>确认</button>
+                                            </form>
+                                            <form th:if="${r[7] == 'PENDING'}" th:action="@{/admin/reservations/confirm/{id}(id=${r[0]})}" method="post" style="display:inline">
+                                                <button class="btn btn-success btn-sm rounded-pill"><i class="bi bi-check me-1"></i>确认</button>
+                                            </form>
+                                            <form th:if="${r[7] == 'UNPAID'}" th:action="@{/admin/reservations/cancel/{id}(id=${r[0]})}" method="post" style="display:inline">
+                                                <button class="btn btn-secondary btn-sm rounded-pill"><i class="bi bi-x me-1"></i>拒绝</button>
+                                            </form>
+                                            <form th:if="${r[7] == 'PENDING'}" th:action="@{/admin/reservations/cancel/{id}(id=${r[0]})}" method="post" style="display:inline">
+                                                <button class="btn btn-secondary btn-sm rounded-pill"><i class="bi bi-x me-1"></i>拒绝</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="fragments/common :: footer"></footer>
+    <div th:replace="fragments/common :: scripts"></div>
+</body>
+</html>

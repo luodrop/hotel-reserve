@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head('我的预约 - 酒店预约管理系统')"></head>
+<body>
+    <nav th:replace="fragments/common :: navbar"></nav>
+    <div th:replace="fragments/common :: flash"></div>
+
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="fw-bold mb-1"><i class="bi bi-person-circle me-2 text-primary"></i>欢迎您，[[${user.realName != null ? user.realName : user.username}]]</h4>
+                <p class="text-muted mb-0">管理您的酒店预约</p>
+            </div>
+            <a th:href="@{/}" class="btn btn-primary rounded-pill">
+                <i class="bi bi-plus-circle me-1"></i>预约新酒店
+            </a>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-primary text-white text-center p-3">
+                    <i class="bi bi-calendar-check fs-1"></i>
+                    <h2 class="fw-bold mb-0" th:text="${#lists.size(reservations)}">0</h2>
+                    <small>总预约数</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-header bg-transparent border-0 pt-4 px-4">
+                <h5 class="fw-bold mb-0"><i class="bi bi-list-ul me-2 text-primary"></i>我的预约列表</h5>
+            </div>
+            <div class="card-body p-4">
+                <div th:if="${#lists.isEmpty(reservations)}" class="text-center py-5">
+                    <i class="bi bi-calendar-plus text-muted" style="font-size: 3rem;"></i>
+                    <p class="text-muted mt-3">暂无预约记录</p>
+                    <a th:href="@{/}" class="btn btn-primary rounded-pill">
+                        <i class="bi bi-plus-circle me-1"></i>立即预约
+                    </a>
+                </div>
+                <div th:if="${not #lists.isEmpty(reservations)}" class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>酒店/房型</th>
+                                <th>入住日期</th>
+                                <th>退房日期</th>
+                                <th>天数</th>
+                                <th>金额</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="r : ${reservations}">
+                                <td>
+                                    <span class="fw-bold" th:text="${r[15]}">酒店名</span><br>
+                                    <small class="text-muted" th:text="${r[13]}">房型</small>
+                                </td>
+                                <td>[[${r[1]}]]</td>
+                                <td>[[${r[2]}]]</td>
+                                <td>[[${nights.apply(r[1], r[2])}]]晚</td>
+                                <td class="fw-bold text-primary">[[${fmt.apply(r[8])}]]</td>
+                                <td>
+                                    <span th:if="${r[7] == 'UNPAID'}" class="badge bg-danger px-3 py-2"><i class="bi bi-credit-card me-1"></i>待付款</span>
+                                    <span th:if="${r[7] == 'PENDING'}" class="badge bg-warning text-dark px-3 py-2"><i class="bi bi-clock me-1"></i>待确认</span>
+                                    <span th:if="${r[7] == 'CONFIRMED'}" class="badge bg-success px-3 py-2"><i class="bi bi-check-circle me-1"></i>已确认</span>
+                                    <span th:if="${r[7] == 'CANCELLED'}" class="badge bg-secondary px-3 py-2"><i class="bi bi-x-circle me-1"></i>已取消</span>
+                                </td>
+                                <td>
+                                    <a th:if="${r[7] == 'UNPAID'}" th:href="@{/user/pay?reservationId={id}(id=${r[0]})}" class="btn btn-outline-primary btn-sm rounded-pill">
+                                        <i class="bi bi-credit-card me-1"></i>去支付
+                                    </a>
+                                    <form th:if="${r[7] == 'PENDING'}" th:action="@{/user/cancel/{id}(id=${r[0]})}" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill" onclick="return confirm('确定取消此预约？')">
+                                            <i class="bi bi-x me-1"></i>取消
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="fragments/common :: footer"></footer>
+    <div th:replace="fragments/common :: scripts"></div>
+</body>
+</html>

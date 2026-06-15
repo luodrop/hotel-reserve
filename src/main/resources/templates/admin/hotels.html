@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head('酒店管理 - 管理后台')"></head>
+<body>
+    <nav th:replace="fragments/common :: navbar"></nav>
+    <div th:replace="fragments/common :: flash"></div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 p-0"><div th:replace="admin/sidebar :: sidebar"></div></div>
+            <div class="col-md-10 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold mb-0"><i class="bi bi-building me-2 text-primary"></i>酒店管理</h4>
+                    <button class="btn btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#hotelModal" onclick="clearHotelForm()"><i class="bi bi-plus-lg me-1"></i>添加酒店</button>
+                </div>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr><th>ID</th><th>图片</th><th>名称</th><th>城市</th><th>评分</th><th>操作</th></tr>
+                                </thead>
+                                <tbody>
+                    <tr th:each="hotel : ${hotels}">
+                        <td>[[${hotel.id}]]</td>
+                        <td><img th:if="${hotel.images != null and !hotel.images.isEmpty()}" th:src="${hotel.images}" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;">
+                            <span th:if="${hotel.images == null or hotel.images.isEmpty()}" class="text-muted"><i class="bi bi-image fs-3"></i></span></td>
+                        <td class="fw-bold" th:text="${hotel.name}">名称</td>
+                        <td th:text="${hotel.city}">城市</td>
+                        <td><span class="badge bg-warning text-dark"><i class="bi bi-star-fill me-1"></i>[[${hotel.rating}]]</span></td>
+                        <td>
+                            <a th:href="@{/admin/rooms?hotelId={id}(id=${hotel.id})}" class="btn btn-outline-info btn-sm rounded-pill"><i class="bi bi-door-open me-1"></i>房型</a>
+                            <button class="btn btn-outline-primary btn-sm rounded-pill edit-hotel-btn"
+                                    th:data-id="${hotel.id}"
+                                    th:data-name="${hotel.name}"
+                                    th:data-address="${hotel.address}"
+                                    th:data-city="${hotel.city}"
+                                    th:data-description="${hotel.description}"
+                                    th:data-rating="${hotel.rating}"
+                                    th:data-images="${hotel.images}"
+                                    data-bs-toggle="modal" data-bs-target="#hotelModal"><i class="bi bi-pencil me-1"></i>编辑</button>
+                            <form th:action="@{/admin/hotels/delete/{id}(id=${hotel.id})}" method="post" style="display:inline">
+                                <button class="btn btn-outline-danger btn-sm rounded-pill" onclick="return confirm('确定删除此酒店？相关房型也将被删除。')"><i class="bi bi-trash me-1"></i>删除</button>
+                            </form>
+                        </td>
+                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hotel Modal -->
+    <div class="modal fade" id="hotelModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form th:action="@{/admin/hotels/save}" method="post">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title"><i class="bi bi-building me-2"></i><span id="hotelModalTitle">添加酒店</span></h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <input type="hidden" name="id" id="hotelId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">酒店名称 <span class="text-danger">*</span></label>
+                                <input type="text" name="name" id="hotelName" class="form-control" required>
+                            </div>
+                            <div class="col-md-6"><label class="form-label">城市</label><input type="text" name="city" id="hotelCity" class="form-control" required></div>
+                            <div class="col-md-6"><label class="form-label">评分</label><input type="number" name="rating" id="hotelRating" class="form-control" step="0.1" min="0" max="5"></div>
+                            <div class="col-md-6"><label class="form-label">图片URL</label><input type="text" name="images" id="hotelImages" class="form-control" placeholder="https://..."></div>
+                            <div class="col-12"><label class="form-label">地址</label><input type="text" name="address" id="hotelAddress" class="form-control"></div>
+                            <div class="col-12"><label class="form-label">描述</label><textarea name="description" id="hotelDescription" class="form-control" rows="3"></textarea></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="fragments/common :: footer"></footer>
+    <div th:replace="fragments/common :: scripts"></div>
+</body>
+</html>

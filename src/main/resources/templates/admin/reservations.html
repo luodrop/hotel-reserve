@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head('预约管理 - 管理后台')"></head>
+<body>
+    <nav th:replace="fragments/common :: navbar"></nav>
+    <div th:replace="fragments/common :: flash"></div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 p-0"><div th:replace="admin/sidebar :: sidebar"></div></div>
+            <div class="col-md-10 p-4">
+                <h4 class="fw-bold mb-4"><i class="bi bi-calendar-check me-2 text-primary"></i>预约管理</h4>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>用户</th>
+                                        <th>酒店/房型</th>
+                                        <th>入住</th>
+                                        <th>退房</th>
+                                        <th>天数</th>
+                                        <th>金额</th>
+                                        <th>手机</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="r : ${reservations}">
+                                        <td>[[${r[0]}]]</td>
+                                        <td>[[${r[12] != null ? r[12] : r[11]}]]</td>
+                                        <td>
+                                            <span>[[${r[15]}]]</span><br>
+                                            <small class="text-muted">[[${r[13]}]]</small>
+                                        </td>
+                                        <td>[[${r[1]}]]</td>
+                                        <td>[[${r[2]}]]</td>
+                                        <td>[[${nights.apply(r[1], r[2])}]]天</td>
+                                        <td class="fw-bold text-primary">[[${fmt.apply(r[8])}]]</td>
+                                        <td>[[${r[6] != null ? r[6] : '-'}]]</td>
+                                        <td>
+                                            <span th:if="${r[7] == 'UNPAID'}" class="badge bg-danger px-3 py-1"><i class="bi bi-credit-card me-1"></i>待付款</span>
+                                            <span th:if="${r[7] == 'PENDING'}" class="badge bg-warning text-dark px-3 py-1"><i class="bi bi-clock me-1"></i>待确认</span>
+                                            <span th:if="${r[7] == 'CONFIRMED'}" class="badge bg-success px-3 py-1"><i class="bi bi-check-circle me-1"></i>已确认</span>
+                                            <span th:if="${r[7] == 'CANCELLED'}" class="badge bg-secondary px-3 py-1"><i class="bi bi-x-circle me-1"></i>已取消</span>
+                                        </td>
+                                        <td>
+                                            <form th:if="${r[7] == 'UNPAID' or r[7] == 'PENDING'}" th:action="@{/admin/reservations/confirm/{id}(id=${r[0]})}" method="post" style="display:inline">
+                                                <button class="btn btn-success btn-sm rounded-pill"><i class="bi bi-check-lg me-1"></i>确认</button>
+                                            </form>
+                                            <form th:if="${r[7] == 'UNPAID' or r[7] == 'PENDING'}" th:action="@{/admin/reservations/cancel/{id}(id=${r[0]})}" method="post" style="display:inline">
+                                                <button class="btn btn-secondary btn-sm rounded-pill"><i class="bi bi-x-lg me-1"></i>取消</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="fragments/common :: footer"></footer>
+    <div th:replace="fragments/common :: scripts"></div>
+</body>
+</html>
